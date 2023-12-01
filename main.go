@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	// 优雅退出
 	// Capture interrupt signal
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
@@ -24,6 +25,7 @@ func main() {
 		os.Exit(130)
 	}()
 
+	// Main
 	if err := cmd.Execute(); err != nil {
 		logger.L().Fatal(err.Error())
 	}

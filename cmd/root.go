@@ -39,7 +39,7 @@ var ksExamples = fmt.Sprintf(`
 
   # View cached configurations
   %[1]s config view
-`, cautils.ExecName())
+`, cautils.ExecName()) // 判断安装方式 输出不同的命令提示
 
 func NewDefaultKubescapeCommand() *cobra.Command {
 	ks := core.NewKubescape()
@@ -54,9 +54,9 @@ func getRootCmd(ks meta.IKubescape) *cobra.Command {
 		Example: ksExamples,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			k8sinterface.SetClusterContextName(rootInfo.KubeContext)
-			initLogger()
-			initLoggerLevel()
-			initEnvironment()
+			initLogger()      // 初始化日志
+			initLoggerLevel() // 初始化日志级别
+			initEnvironment() // 初始化环境变量
 			initCacheDir()
 		},
 	}
@@ -69,7 +69,7 @@ func getRootCmd(ks meta.IKubescape) *cobra.Command {
 		oldUsageTemplate := rootCmd.UsageTemplate()
 		newUsageTemplate := strings.NewReplacer("{{.UseLine}}", "kubectl {{.UseLine}}", "{{.CommandPath}}", "kubectl {{.CommandPath}}").Replace(oldUsageTemplate)
 		rootCmd.SetUsageTemplate(newUsageTemplate)
-	}
+	} // 为了兼容 Krew 插件
 
 	rootCmd.PersistentFlags().StringVar(&rootInfo.DiscoveryServerURL, "server", "", "Backend discovery server URL")
 
@@ -113,6 +113,6 @@ func getRootCmd(ks meta.IKubescape) *cobra.Command {
 }
 
 func Execute() error {
-	ks := NewDefaultKubescapeCommand()
-	return ks.Execute()
+	ks := NewDefaultKubescapeCommand() // 1. 初始化
+	return ks.Execute()                // 2.  执行
 }

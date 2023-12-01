@@ -4,61 +4,61 @@ go 1.21
 
 
 require (
-	github.com/adrg/xdg v0.4.0
-	github.com/anchore/grype v0.65.0
-	github.com/anchore/stereoscope v0.0.0-20230727211946-d1f3d766295e
-	github.com/anchore/syft v0.86.1
-	github.com/armosec/armoapi-go v0.0.256
-	github.com/armosec/utils-go v0.0.40
-	github.com/armosec/utils-k8s-go v0.0.18
-	github.com/briandowns/spinner v1.23.0
-	github.com/distribution/distribution v2.8.3+incompatible
-	github.com/docker/distribution v2.8.2+incompatible
-	github.com/enescakir/emoji v1.0.0
-	github.com/francoispqt/gojay v1.2.13
-	github.com/go-git/go-git/v5 v5.8.1
-	github.com/google/go-containerregistry v0.16.1
-	github.com/google/uuid v1.3.1
-	github.com/johnfercher/maroto v1.0.0
-	github.com/json-iterator/go v1.1.12
-	github.com/jwalton/gchalk v1.3.0
-	github.com/kubescape/backend v0.0.15
-	github.com/kubescape/go-git-url v0.0.25
-	github.com/kubescape/go-logger v0.0.22
-	github.com/kubescape/k8s-interface v0.0.146
-	github.com/kubescape/opa-utils v0.0.271
-	github.com/kubescape/rbac-utils v0.0.21-0.20230806101615-07e36f555520
-	github.com/kubescape/regolibrary v1.0.291-rc.0
-	github.com/libgit2/git2go/v33 v33.0.9
-	github.com/maruel/natural v1.1.1
-	github.com/matthyx/go-gitlog v0.0.0-20231005131906-9ffabe3c5bcd
-	github.com/mattn/go-isatty v0.0.19
-	github.com/mikefarah/yq/v4 v4.29.1
-	github.com/olekukonko/tablewriter v0.0.6-0.20230417144759-edd1a71a5576
-	github.com/open-policy-agent/opa v0.55.0
-	github.com/owenrumney/go-sarif/v2 v2.2.0
-	github.com/project-copacetic/copacetic v0.0.0-00010101000000-000000000000
-	github.com/schollz/progressbar/v3 v3.13.0
-	github.com/sergi/go-diff v1.3.1
-	github.com/sigstore/cosign/v2 v2.1.1
-	github.com/sirupsen/logrus v1.9.3
-	github.com/spf13/cobra v1.7.0
-	github.com/stretchr/testify v1.8.4
-	github.com/whilp/git-urls v1.0.0
-	go.opentelemetry.io/otel v1.18.0
-	go.opentelemetry.io/otel/metric v1.18.0
+	github.com/adrg/xdg v0.4.0 //  基本目录映射规范
+	github.com/anchore/grype v0.65.0 //  用于扫描容器镜像和文件系统的工具
+	github.com/anchore/stereoscope v0.0.0-20230727211946-d1f3d766295e //  用于处理镜像内容 和 压缩文件的库
+	github.com/anchore/syft v0.86.1 // 用于用于从容器映像和文件系统生成软件物料清单 (SBOM) 的 CLI 工具和 Go 库
+	github.com/armosec/armoapi-go v0.0.256 // 用于与 Armo API 通信的 Go SDK
+	github.com/armosec/utils-go v0.0.40 // 用于 ArmoSec 项目的 Go 工具
+	github.com/armosec/utils-k8s-go v0.0.18 // 用于 ArmoSec 项目的 K8s Go 工具
+	github.com/briandowns/spinner v1.23.0 // 用于 CLI 的 Go 动画加载器
+	github.com/distribution/distribution v2.8.3+incompatible // 用于 OCI 打包 传输 和 存储的 Go 库
+	github.com/docker/distribution v2.8.2+incompatible // 用于 OCI 打包 传输 和 存储的 Go 库
+	github.com/enescakir/emoji v1.0.0  // 用于在 Go 中使用 Emoji 的库
+	github.com/francoispqt/gojay v1.2.13 // Golang 的高性能 JSON 编码器/解码器
+	github.com/go-git/go-git/v5 v5.8.1 // 纯 Go编写的高度可扩展的 git 实现库
+	github.com/google/go-containerregistry v0.16.1 // 用于处理容器注册表 (container registries) 的 Go 库
+	github.com/google/uuid v1.3.1 // 用于生成和解析 UUID 的 Go 库
+	github.com/johnfercher/maroto v1.0.0 // 用于生成 PDF 的 Go 库
+	github.com/json-iterator/go v1.1.12 // 用于高性能 JSON 解析和生成的 Go 库
+	github.com/jwalton/gchalk v1.3.0 // 用于在终端中打印彩色文本的 Go 库
+	github.com/kubescape/backend v0.0.15 // 用于与 Kubescape 后端通信的 Go SDK
+	github.com/kubescape/go-git-url v0.0.25 // 用于解析 git URL 的 Go 库
+	github.com/kubescape/go-logger v0.0.22  // 用于 Kubescape 项目的 Go 日志库
+	github.com/kubescape/k8s-interface v0.0.146 // 用于与 Kubernetes 通信的 Go SDK
+	github.com/kubescape/opa-utils v0.0.271  // Kubescape 项目 的 OPA 工具库
+	github.com/kubescape/rbac-utils v0.0.21-0.20230806101615-07e36f555520 // 用于 Kubescape 项目的 RBAC 工具库
+	github.com/kubescape/regolibrary v1.0.291-rc.0  // 用于 Kubescape 项目的 Rego  策略库
+	github.com/libgit2/git2go/v33 v33.0.9 // 用于 Git 的 Go 绑定
+	github.com/maruel/natural v1.1.1 // Go 中的自然排序 (natsort)
+	github.com/matthyx/go-gitlog v0.0.0-20231005131906-9ffabe3c5bcd // 用于从 git 仓库中提取提交日志的 Go 库
+	github.com/mattn/go-isatty v0.0.19 // 用于检查终端是否支持交互式终端的 Go 库 TTY
+	github.com/mikefarah/yq/v4 v4.29.1 // 用于 YAML 处理的 Go 库
+	github.com/olekukonko/tablewriter v0.0.6-0.20230417144759-edd1a71a5576 // 用于在 Go 中打印表格的库
+	github.com/open-policy-agent/opa v0.55.0 // 用于编写和评估策略的通用引擎 Open Policy Agent (OPA)
+	github.com/owenrumney/go-sarif/v2 v2.2.0 // 用于生成 SARIF 格式的 Go 库 静态分析结果交换格式
+	github.com/project-copacetic/copacetic v0.0.0-00010101000000-000000000000 // CLI 工具，用于使用漏洞扫描器的报告直接修补容器映像
+	github.com/schollz/progressbar/v3 v3.13.0 //线程安全进度条
+	github.com/sergi/go-diff v1.3.1 // 用于计算 差异的 Go 库
+	github.com/sigstore/cosign/v2 v2.1.1 // 对 OCI 容器（和其他工件）进行签名！
+	github.com/sirupsen/logrus v1.9.3 //  Go (golang) 的结构化记录器 (日志库)
+	github.com/spf13/cobra v1.7.0 // 用于创建强大的现代 CLI 应用程序的库
+	github.com/stretchr/testify v1.8.4 // 用于编写测试的 Go 断言库
+	github.com/whilp/git-urls v1.0.0  // 用于解析 git URL 的 Go 库
+	go.opentelemetry.io/otel v1.18.0  //  API 来直接测量软件的性能和行为
+	go.opentelemetry.io/otel/metric v1.18.0 //用于衡量源代码操作的指标。
 	golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b
 	golang.org/x/mod v0.12.0
 	golang.org/x/term v0.13.0
-	gopkg.in/op/go-logging.v1 v1.0.0-20160211212156-b2cb9fa56473
-	gopkg.in/yaml.v3 v3.0.1
-	helm.sh/helm/v3 v3.12.1
-	k8s.io/api v0.27.4
-	k8s.io/apimachinery v0.27.4
-	k8s.io/client-go v0.27.4
-	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
-	sigs.k8s.io/kustomize/api v0.13.2
-	sigs.k8s.io/kustomize/kyaml v0.14.1
+	gopkg.in/op/go-logging.v1 v1.0.0-20160211212156-b2cb9fa56473 // 用于 Go 的结构化记录器 (日志库)
+	gopkg.in/yaml.v3 v3.0.1 // 用于 YAML 处理的 Go 库
+	helm.sh/helm/v3 v3.12.1 // 用于管理 Kubernetes 应用程序的工具 Helm
+	k8s.io/api v0.27.4 // 用于 Kubernetes API 的 Go 语言客户端
+	k8s.io/apimachinery v0.27.4 // Kubernetes 和类 Kubernetes API 对象的方案、类型、编码、解码和转换包。
+	k8s.io/client-go v0.27.4   // 用于访问 Kubernetes API 的 Go 语言客户端
+	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // 用于 Kubernetes 的 Go 语言工具库
+	sigs.k8s.io/kustomize/api v0.13.2 // 用于 Kubernetes 的自定义资源配置管理器
+	sigs.k8s.io/kustomize/kyaml v0.14.1 // 用于 kyaml 包含用于以 yaml 形式读取和写入 Kubernetes 资源配置的库。
 )
 
 require github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
