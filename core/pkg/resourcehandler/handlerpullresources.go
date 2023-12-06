@@ -19,12 +19,12 @@ import (
 func CollectResources(ctx context.Context, rsrcHandler IResourceHandler, policyIdentifier []cautils.PolicyIdentifier, opaSessionObj *cautils.OPASessionObj, progressListener opaprocessor.IJobProgressNotificationClient, scanInfo *cautils.ScanInfo) error {
 	ctx, span := otel.Tracer("").Start(ctx, "resourcehandler.CollectResources")
 	defer span.End()
-	opaSessionObj.Report.ClusterAPIServerInfo = rsrcHandler.GetClusterAPIServerInfo(ctx)
+	opaSessionObj.Report.ClusterAPIServerInfo = rsrcHandler.GetClusterAPIServerInfo(ctx) // 获取集群API 信息
 
-	// set cloud metadata only when scanning a cluster
-	if rsrcHandler.GetCloudProvider() != "" {
-		setCloudMetadata(opaSessionObj, rsrcHandler.GetCloudProvider())
-	}
+	//// set cloud metadata only when scanning a cluster
+	//if rsrcHandler.GetCloudProvider() != "" { // 获取云服务商
+	//	setCloudMetadata(opaSessionObj, rsrcHandler.GetCloudProvider())
+	//}
 
 	resourcesMap, allResources, externalResources, excludedRulesMap, err := rsrcHandler.GetResources(ctx, opaSessionObj, progressListener, scanInfo)
 	if err != nil {

@@ -25,7 +25,7 @@ import (
 
 // getKubernetesApi
 func getKubernetesApi() *k8sinterface.KubernetesApi {
-	if !k8sinterface.IsConnectedToCluster() {
+	if !k8sinterface.IsConnectedToCluster() { // 加载k8s 配置文件测试
 		return nil
 	}
 	return k8sinterface.NewKubernetesApi()
@@ -36,10 +36,10 @@ func getExceptionsGetter(ctx context.Context, useExceptions string, accountID st
 		// load exceptions from file
 		return getter.NewLoadPolicy([]string{useExceptions})
 	}
-	if accountID != "" {
-		// download exceptions from Kubescape Cloud backend
-		return getter.GetKSCloudAPIConnector()
-	}
+	//if accountID != "" {
+	//	// download exceptions from Kubescape Cloud backend
+	//	return getter.GetKSCloudAPIConnector()
+	//}
 	// download exceptions from GitHub
 	if downloadReleasedPolicy == nil {
 		downloadReleasedPolicy = getter.NewDownloadReleasedPolicy()
@@ -218,13 +218,13 @@ func getConfigInputsGetter(ctx context.Context, ControlsInputs string, accountID
 	if len(ControlsInputs) > 0 {
 		return getter.NewLoadPolicy([]string{ControlsInputs})
 	}
-	if accountID != "" {
-		g := getter.GetKSCloudAPIConnector() // download config from Kubescape Cloud backend
-		return g
-	}
-	if downloadReleasedPolicy == nil {
-		downloadReleasedPolicy = getter.NewDownloadReleasedPolicy()
-	}
+	//if accountID != "" {
+	//	g := getter.GetKSCloudAPIConnector() // download config from Kubescape Cloud backend 通过云控制器下载策略 // SASS服务
+	//	return g
+	//}
+	//if downloadReleasedPolicy == nil {
+	//	downloadReleasedPolicy = getter.NewDownloadReleasedPolicy()
+	//}
 	if err := downloadReleasedPolicy.SetRegoObjects(); err != nil { // if failed to pull config inputs, fallback to BE
 		logger.L().Ctx(ctx).Warning("failed to get config inputs from github release, this may affect the scanning results", helpers.Error(err))
 	}
@@ -262,14 +262,14 @@ func getAttackTracksGetter(ctx context.Context, attackTracks, accountID string, 
 	if len(attackTracks) > 0 {
 		return getter.NewLoadPolicy([]string{attackTracks})
 	}
-	if accountID != "" {
-		g := getter.GetKSCloudAPIConnector() // download attack tracks from Kubescape Cloud backend
-		return g
-	}
-	if downloadReleasedPolicy == nil {
-		downloadReleasedPolicy = getter.NewDownloadReleasedPolicy()
-	}
-
+	//if accountID != "" {
+	//	g := getter.GetKSCloudAPIConnector() // download attack tracks from Kubescape Cloud backend
+	//	return g
+	//}
+	//if downloadReleasedPolicy == nil {
+	//	downloadReleasedPolicy = getter.NewDownloadReleasedPolicy()
+	//}
+	// 异常处理
 	if err := downloadReleasedPolicy.SetRegoObjects(); err != nil { // if failed to pull attack tracks, fallback to cache
 		logger.L().Ctx(ctx).Warning("failed to get attack tracks from github release, loading attack tracks from cache", helpers.Error(err))
 		return getter.NewLoadPolicy([]string{getter.GetDefaultPath(cautils.LocalAttackTracksFilename)})

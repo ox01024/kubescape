@@ -50,10 +50,9 @@ func NewPolicyHandler(clusterName string) *PolicyHandler {
 
 func (policyHandler *PolicyHandler) CollectPolicies(ctx context.Context, policyIdentifier []cautils.PolicyIdentifier, scanInfo *cautils.ScanInfo) (*cautils.OPASessionObj, error) {
 	opaSessionObj := cautils.NewOPASessionObj(ctx, nil, nil, scanInfo)
-
 	policyHandler.getters = &scanInfo.Getters
 
-	// get policies, exceptions and controls inputs
+	// get policies, exceptions and controls inputs // 获取策略、异常和控制输入
 	policies, exceptions, controlInputs, err := policyHandler.getPolicies(ctx, policyIdentifier)
 	if err != nil {
 		return opaSessionObj, err
@@ -73,7 +72,7 @@ func (policyHandler *PolicyHandler) getPolicies(ctx context.Context, policyIdent
 	logger.L().Start("Loading policies...")
 
 	// get policies
-	policies, err = policyHandler.getScanPolicies(ctx, policyIdentifier)
+	policies, err = policyHandler.getScanPolicies(ctx, policyIdentifier) // 获取策略 默认为 cluserscan mite nsa
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -104,19 +103,19 @@ func (policyHandler *PolicyHandler) getPolicies(ctx context.Context, policyIdent
 
 // getScanPolicies - get policies from cache or downloads them. The function returns an error if the policies could not be downloaded.
 func (policyHandler *PolicyHandler) getScanPolicies(ctx context.Context, policyIdentifier []cautils.PolicyIdentifier) ([]reporthandling.Framework, error) {
-	policyIdentifiersSlice := policyIdentifierToSlice(policyIdentifier)
-	// check if policies are cached
-	if cachedPolicies, policiesExist := policyHandler.cachedFrameworks.Get(); policiesExist {
-		// check if the cached policies are the same as the requested policies, otherwise download the policies
-		if cachedIdentifiers, identifiersExist := policyHandler.cachedPolicyIdentifiers.Get(); identifiersExist && cautils.StringSlicesAreEqual(cachedIdentifiers, policyIdentifiersSlice) {
-			logger.L().Info("Using cached policies")
-			return deepCopyPolicies(cachedPolicies)
-		}
-
-		logger.L().Debug("Cached policies are not the same as the requested policies")
-		policyHandler.cachedPolicyIdentifiers.Invalidate()
-		policyHandler.cachedFrameworks.Invalidate()
-	}
+	policyIdentifiersSlice := policyIdentifierToSlice(policyIdentifier) // ["Framework: clusterscan","Framework: mitre","Framework: nsa"]
+	// check if policies are cached // 检查策略是否缓存
+	//if cachedPolicies, policiesExist := policyHandler.cachedFrameworks.Get(); policiesExist {
+	//	// check if the cached policies are the same as the requested policies, otherwise download the policies
+	//	if cachedIdentifiers, identifiersExist := policyHandler.cachedPolicyIdentifiers.Get(); identifiersExist && cautils.StringSlicesAreEqual(cachedIdentifiers, policyIdentifiersSlice) {
+	//		logger.L().Info("Using cached policies")
+	//		return deepCopyPolicies(cachedPolicies)
+	//	}
+	//
+	//	logger.L().Debug("Cached policies are not the same as the requested policies")
+	//	policyHandler.cachedPolicyIdentifiers.Invalidate()
+	//	policyHandler.cachedFrameworks.Invalidate()
+	//}
 
 	policies, err := policyHandler.downloadScanPolicies(ctx, policyIdentifier)
 	if err == nil {
@@ -143,7 +142,6 @@ func deepCopyPolicies(src []reporthandling.Framework) ([]reporthandling.Framewor
 
 func (policyHandler *PolicyHandler) downloadScanPolicies(ctx context.Context, policyIdentifier []cautils.PolicyIdentifier) ([]reporthandling.Framework, error) {
 	frameworks := []reporthandling.Framework{}
-
 	switch getScanKind(policyIdentifier) {
 	case apisv1.KindFramework: // Download frameworks
 		for _, rule := range policyIdentifier {
@@ -157,7 +155,7 @@ func (policyHandler *PolicyHandler) downloadScanPolicies(ctx context.Context, po
 			}
 			if receivedFramework != nil {
 				frameworks = append(frameworks, *receivedFramework)
-				cache := getter.GetDefaultPath(rule.Identifier + ".json")
+				cache := getter.GetDefaultPath(rule.Identifier + ".json") // cache = /Users/waffle/.kubescape/clusterscan.json
 				if err := getter.SaveInFile(receivedFramework, cache); err != nil {
 					logger.L().Ctx(ctx).Warning("failed to cache file", helpers.String("file", cache), helpers.Error(err))
 				}

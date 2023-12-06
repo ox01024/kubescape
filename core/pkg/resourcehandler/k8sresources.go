@@ -64,12 +64,12 @@ func (k8sHandler *K8sResourceHandler) GetResources(ctx context.Context, sessionO
 	logger.L().Start("Accessing Kubernetes objects...")
 	var err error
 
-	globalFieldSelectors := getFieldSelectorFromScanInfo(scanInfo)
+	globalFieldSelectors := getFieldSelectorFromScanInfo(scanInfo) // 获取扫描信息中的字段选择器 默认为空选择器
 
 	if scanInfo.IsDeletedScanObject {
 		sessionObj.SingleResourceScan, err = getWorkloadFromScanObject(scanInfo.ScanObject)
 	} else {
-		sessionObj.SingleResourceScan, err = k8sHandler.findScanObjectResource(scanInfo.ScanObject, globalFieldSelectors)
+		sessionObj.SingleResourceScan, err = k8sHandler.findScanObjectResource(scanInfo.ScanObject, globalFieldSelectors) // nli nli
 	}
 
 	if err != nil {
@@ -79,7 +79,7 @@ func (k8sHandler *K8sResourceHandler) GetResources(ctx context.Context, sessionO
 	resourceToControl := make(map[string][]string)
 	// build resources map
 	// map resources based on framework required resources: map["/group/version/kind"][]<k8s workloads ids>
-	queryableResources, excludedRulesMap := getQueryableResourceMapFromPolicies(sessionObj.Policies, sessionObj.SingleResourceScan)
+	queryableResources, excludedRulesMap := getQueryableResourceMapFromPolicies(sessionObj.Policies, sessionObj.SingleResourceScan) //sessionObj.Policies 策略 sessionObj.SingleResourceScan 资源
 	ksResourceMap := setKSResourceMap(sessionObj.Policies, resourceToControl)
 
 	// map of Kubescape resources to control_ids

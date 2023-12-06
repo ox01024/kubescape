@@ -150,16 +150,16 @@ type Getters struct {
 }
 
 func (scanInfo *ScanInfo) Init(ctx context.Context) {
-	scanInfo.setUseFrom()
-	scanInfo.setUseArtifactsFrom(ctx)
-	if scanInfo.ScanID == "" {
-		scanInfo.ScanID = uuid.NewString()
+	scanInfo.setUseFrom()             // 默认false 不会执行 只有指定本地策略时才会执行
+	scanInfo.setUseArtifactsFrom(ctx) // 默认为空
+	if scanInfo.ScanID == "" {        // 默认为空
+		scanInfo.ScanID = uuid.NewString() // 生成UUID
 	}
 
 }
 
 func (scanInfo *ScanInfo) setUseArtifactsFrom(ctx context.Context) {
-	if scanInfo.UseArtifactsFrom == "" {
+	if scanInfo.UseArtifactsFrom == "" { // 默认为空
 		return
 	}
 	// UseArtifactsFrom must be a path without a filename
@@ -194,7 +194,7 @@ func (scanInfo *ScanInfo) setUseArtifactsFrom(ctx context.Context) {
 }
 
 func (scanInfo *ScanInfo) setUseFrom() {
-	if scanInfo.UseDefault {
+	if scanInfo.UseDefault { // 默认 false
 		for _, policy := range scanInfo.PolicyIdentifier {
 			scanInfo.UseFrom = append(scanInfo.UseFrom, getter.GetDefaultPath(policy.Identifier+".json"))
 		}

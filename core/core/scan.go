@@ -19,7 +19,6 @@ import (
 	"github.com/kubescape/kubescape/v3/core/pkg/resultshandling/printer"
 	"github.com/kubescape/kubescape/v3/core/pkg/resultshandling/reporter"
 	"github.com/kubescape/kubescape/v3/pkg/imagescan"
-	apisv1 "github.com/kubescape/opa-utils/httpserver/apis/v1"
 	"go.opentelemetry.io/otel"
 	"golang.org/x/exp/slices"
 
@@ -36,13 +35,13 @@ type componentInterfaces struct {
 }
 
 func getInterfaces(ctx context.Context, scanInfo *cautils.ScanInfo) componentInterfaces {
-	ctx, span := otel.Tracer("").Start(ctx, "setup interfaces")
-	defer span.End()
+	ctx, span := otel.Tracer("").Start(ctx, "setup interfaces") // 初始化 上下文 和 span
+	defer span.End()                                            // 结束 span
 
 	// ================== setup k8s interface object ======================================
 	var k8s *k8sinterface.KubernetesApi
-	if scanInfo.GetScanningContext() == cautils.ContextCluster {
-		k8s = getKubernetesApi()
+	if scanInfo.GetScanningContext() == cautils.ContextCluster { // 判断扫描上下文是否为集群 默认为集群
+		k8s = getKubernetesApi() // 获取k8s接口
 		if k8s == nil {
 			logger.L().Ctx(ctx).Fatal("failed connecting to Kubernetes cluster")
 		}
@@ -52,7 +51,7 @@ func getInterfaces(ctx context.Context, scanInfo *cautils.ScanInfo) componentInt
 	tenantConfig := cautils.GetTenantConfig(scanInfo.AccountID, scanInfo.AccessKey, k8sinterface.GetContextName(), scanInfo.CustomClusterName, getKubernetesApi())
 
 	// Set submit behavior AFTER loading tenant config
-	setSubmitBehavior(scanInfo, tenantConfig)
+	setSubmitBehavior(scanInfo, tenantConfig) // 设置 提交行为 默认为false
 
 	if scanInfo.Submit {
 		// submit - Create tenant & Submit report
@@ -62,18 +61,19 @@ func getInterfaces(ctx context.Context, scanInfo *cautils.ScanInfo) componentInt
 	}
 
 	// ================== version testing ======================================
+	// ================== 版本检查 ======================================
 
 	v := cautils.NewIVersionCheckHandler(ctx)
 	v.CheckLatestVersion(ctx, cautils.NewVersionCheckRequest(cautils.BuildNumber, policyIdentifierIdentities(scanInfo.PolicyIdentifier), "", cautils.ScanningContextToScanningScope(scanInfo.GetScanningContext())))
 
 	// ================== setup host scanner object ======================================
-	ctxHostScanner, spanHostScanner := otel.Tracer("").Start(ctx, "setup host scanner")
+	ctxHostScanner, spanHostScanner := otel.Tracer("").Start(ctx, "setup host scanner") // 初始化 Scanner 上下文 和 span
 	hostSensorHandler := getHostSensorHandler(ctx, scanInfo, k8s)
 	if err := hostSensorHandler.Init(ctxHostScanner); err != nil {
-		logger.L().Ctx(ctxHostScanner).Error("failed to init host scanner", helpers.Error(err))
-		hostSensorHandler = hostsensorutils.NewHostSensorHandlerMock()
+		logger.L().Ctx(ctxHostScanner).Error("failed to init host scanner", helpers.Error(err)) // 初始化失败
+		hostSensorHandler = hostsensorutils.NewHostSensorHandlerMock()                          // 使用 mock test
 	}
-	spanHostScanner.End()
+	spanHostScanner.End() // 结束 span
 
 	// ================== setup resource collector object ======================================
 
@@ -118,11 +118,11 @@ func GetOutputPrinters(scanInfo *cautils.ScanInfo, ctx context.Context, clusterN
 }
 
 func (ks *Kubescape) Scan(ctx context.Context, scanInfo *cautils.ScanInfo) (*resultshandling.ResultsHandler, error) {
-	ctxInit, spanInit := otel.Tracer("").Start(ctx, "initialization")
+	ctxInit, spanInit := otel.Tracer("").Start(ctx, "initialization") // 初始化 上下文 和 span
 	logger.L().Start("Kubescape scanner initializing...")
 
 	// ===================== Initialization =====================
-	scanInfo.Init(ctxInit) // initialize scan info
+	scanInfo.Init(ctxInit) // initialize scan info 默认扫描类型为集群 cautils.ScanTypeCluster 扫描策略标识符为 {clusterscan mitre nsa} 扫描ID为随机字符串 32位
 
 	interfaces := getInterfaces(ctxInit, scanInfo)
 	interfaces.report.SetTenantConfig(interfaces.tenantConfig)
@@ -130,15 +130,20 @@ func (ks *Kubescape) Scan(ctx context.Context, scanInfo *cautils.ScanInfo) (*res
 	downloadReleasedPolicy := getter.NewDownloadReleasedPolicy() // download config inputs from github release
 
 	// set policy getter only after setting the customerGUID
-	scanInfo.Getters.PolicyGetter = getPolicyGetter(ctxInit, scanInfo.UseFrom, interfaces.tenantConfig.GetAccountID(), scanInfo.FrameworkScan, downloadReleasedPolicy)
+	//scanInfo.Getters.PolicyGetter = getPolicyGetter(ctxInit, scanInfo.UseFrom, interfaces.tenantConfig.GetAccountID(), scanInfo.FrameworkScan, downloadReleasedPolicy)
+	scanInfo.Getters.PolicyGetter = downloadReleasedPolicy
+	// 下载 策略 并序列化到 downloadReleasedPolicy.gs 中  gitregostore
 	scanInfo.Getters.ControlsInputsGetter = getConfigInputsGetter(ctxInit, scanInfo.ControlsInputs, interfaces.tenantConfig.GetAccountID(), downloadReleasedPolicy)
-	scanInfo.Getters.ExceptionsGetter = getExceptionsGetter(ctxInit, scanInfo.UseExceptions, interfaces.tenantConfig.GetAccountID(), downloadReleasedPolicy)
-	scanInfo.Getters.AttackTracksGetter = getAttackTracksGetter(ctxInit, scanInfo.AttackTracks, interfaces.tenantConfig.GetAccountID(), downloadReleasedPolicy)
+	// 检查是否 有异常
+	//scanInfo.Getters.ExceptionsGetter = getExceptionsGetter(ctxInit, scanInfo.UseExceptions, interfaces.tenantConfig.GetAccountID(), downloadReleasedPolicy)
+	scanInfo.Getters.ExceptionsGetter = downloadReleasedPolicy
+	//scanInfo.Getters.AttackTracksGetter = getAttackTracksGetter(ctxInit, scanInfo.AttackTracks, interfaces.tenantConfig.GetAccountID(), downloadReleasedPolicy)
+	scanInfo.Getters.AttackTracksGetter = downloadReleasedPolicy
 
-	// TODO - list supported frameworks/controls
-	if scanInfo.ScanAll {
-		scanInfo.SetPolicyIdentifiers(listFrameworksNames(scanInfo.Getters.PolicyGetter), apisv1.KindFramework)
-	}
+	//// TODO - list supported frameworks/controls
+	//if scanInfo.ScanAll {
+	//	scanInfo.SetPolicyIdentifiers(listFrameworksNames(scanInfo.Getters.PolicyGetter), apisv1.KindFramework)
+	//}
 
 	// remove host scanner components
 	defer func() {
@@ -176,6 +181,7 @@ func (ks *Kubescape) Scan(ctx context.Context, scanInfo *cautils.ScanInfo) (*res
 	defer spanOpa.End()
 
 	deps := resources.NewRegoDependenciesData(k8sinterface.GetK8sConfig(), interfaces.tenantConfig.GetContextName())
+
 	reportResults := opaprocessor.NewOPAProcessor(scanData, deps, interfaces.tenantConfig.GetContextName())
 	if err = reportResults.ProcessRulesListener(ctxOpa, cautils.NewProgressHandler("")); err != nil {
 		// TODO - do something

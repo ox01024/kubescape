@@ -24,6 +24,8 @@ type ResultsHandler struct {
 }
 
 func NewResultsHandler(reporterObj reporter.IReport, printerObjs []printer.IPrinter, uiPrinter printer.IPrinter) *ResultsHandler {
+	fmt.Println(printerObjs)
+	fmt.Println(uiPrinter)
 	return &ResultsHandler{
 		ReporterObj:   reporterObj,
 		PrinterObjs:   printerObjs,

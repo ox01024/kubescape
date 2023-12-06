@@ -25,21 +25,21 @@ func addSingleResourceToResourceMaps(k8sResources cautils.K8SResources, allResou
 func getQueryableResourceMapFromPolicies(frameworks []reporthandling.Framework, resource workloadinterface.IWorkload) (QueryableResources, map[string]bool) {
 	queryableResources := make(QueryableResources)
 	excludedRulesMap := make(map[string]bool)
-	namespace := getScannedResourceNamespace(resource)
+	namespace := getScannedResourceNamespace(resource) // 获取命名空间 ""
 
-	for _, framework := range frameworks {
+	for _, framework := range frameworks { // 合规框架 Or 策略模版
 		for _, control := range framework.Controls {
 			for _, rule := range control.Rules {
 				var resourcesFilterMap map[string]bool = nil
-				// for single resource scan, we need to filter the rules and which resources to query according to the given resource
-				if resource != nil {
-					if resourcesFilterMap = filterRuleMatchesForResource(resource.GetKind(), rule.Match); resourcesFilterMap == nil {
-						// rule does not apply to this resource
-						excludedRulesMap[rule.Name] = false
-						continue
-					}
-				}
-				for _, match := range rule.Match {
+				//// for single resource scan, we need to filter the rules and which resources to query according to the given resource
+				//if resource != nil {
+				//	if resourcesFilterMap = filterRuleMatchesForResource(resource.GetKind(), rule.Match); resourcesFilterMap == nil {
+				//		// rule does not apply to this resource
+				//		excludedRulesMap[rule.Name] = false
+				//		continue
+				//	}
+				//}
+				for _, match := range rule.Match { //																	""
 					updateQueryableResourcesMapFromRuleMatchObject(&match, resourcesFilterMap, queryableResources, namespace)
 				}
 			}
@@ -121,8 +121,7 @@ func updateQueryableResourcesMapFromRuleMatchObject(match *reporthandling.RuleMa
 						continue
 					}
 				}
-
-				groupResources := k8sinterface.ResourceGroupToString(apiGroup, apiVersions, resource)
+				groupResources := k8sinterface.ResourceGroupToSlice(apiGroup, apiVersions, resource)
 				// if namespace filter is set, we are scanning a workload in a specific namespace
 				// calling the getNamespacesSelector will add the namespace field selector (or name for Namespace resource)
 				globalFieldSelector := getNamespacesSelector(resource, namespace, "=")

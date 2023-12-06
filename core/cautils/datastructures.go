@@ -28,12 +28,12 @@ type ScanTypes string
 
 const (
 	TopWorkloadsNumber           = 3
-	ScanTypeCluster    ScanTypes = "cluster"
-	ScanTypeRepo       ScanTypes = "repo"
-	ScanTypeImage      ScanTypes = "image"
-	ScanTypeWorkload   ScanTypes = "workload"
-	ScanTypeFramework  ScanTypes = "framework"
-	ScanTypeControl    ScanTypes = "control"
+	ScanTypeCluster    ScanTypes = "cluster"   // ScanTypeCluster是扫描集群
+	ScanTypeRepo       ScanTypes = "repo"      // ScanTypeRepo是扫描镜像仓库
+	ScanTypeImage      ScanTypes = "image"     // ScanTypeImage是扫描镜像
+	ScanTypeWorkload   ScanTypes = "workload"  // ScanTypeWorkload是扫描工作负载
+	ScanTypeFramework  ScanTypes = "framework" // ScanTypeFramework是扫描框架
+	ScanTypeControl    ScanTypes = "control"   // ScanTypeControl是扫描控制器
 )
 
 type OPASessionObj struct {

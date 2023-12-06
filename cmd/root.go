@@ -70,14 +70,15 @@ func getRootCmd(ks meta.IKubescape) *cobra.Command {
 		newUsageTemplate := strings.NewReplacer("{{.UseLine}}", "kubectl {{.UseLine}}", "{{.CommandPath}}", "kubectl {{.CommandPath}}").Replace(oldUsageTemplate)
 		rootCmd.SetUsageTemplate(newUsageTemplate)
 	} // 为了兼容 Krew 插件
-
+	// ### flags
 	rootCmd.PersistentFlags().StringVar(&rootInfo.DiscoveryServerURL, "server", "", "Backend discovery server URL")
 
+	// MarkDeprecated 弃用
 	rootCmd.PersistentFlags().MarkDeprecated("environment", "'environment' is no longer supported, Use 'server' instead. Feel free to contact the Kubescape maintainers for more information.")
 	rootCmd.PersistentFlags().MarkDeprecated("env", "'env' is no longer supported, Use 'server' instead. Feel free to contact the Kubescape maintainers for more information.")
 	rootCmd.PersistentFlags().MarkHidden("environment")
 	rootCmd.PersistentFlags().MarkHidden("env")
-
+	//MarkHidden 隐藏
 	rootCmd.PersistentFlags().StringVar(&rootInfo.LoggerName, "logger-name", "", fmt.Sprintf("Logger name. Supported: %s [$KS_LOGGER_NAME]", strings.Join(logger.ListLoggersNames(), "/")))
 	rootCmd.PersistentFlags().MarkHidden("logger-name")
 
@@ -87,7 +88,7 @@ func getRootCmd(ks meta.IKubescape) *cobra.Command {
 	rootCmd.PersistentFlags().BoolVarP(&rootInfo.EnableColor, "enable-color", "", false, "Force enable color output for logging")
 
 	rootCmd.PersistentFlags().StringVarP(&rootInfo.KubeContext, "kube-context", "", "", "Kube context. Default will use the current-context")
-	// Supported commands
+	// Supported commands ### 命令
 	rootCmd.AddCommand(scan.GetScanCommand(ks))
 	rootCmd.AddCommand(download.GetDownloadCmd(ks))
 	rootCmd.AddCommand(list.GetListCmd(ks))
@@ -99,7 +100,7 @@ func getRootCmd(ks meta.IKubescape) *cobra.Command {
 	rootCmd.AddCommand(patch.GetPatchCmd(ks))
 	rootCmd.AddCommand(operator.GetOperatorCmd(ks))
 
-	// deprecated commands
+	// deprecated commands ### 废弃的命令
 	rootCmd.AddCommand(&cobra.Command{
 		Use:        "submit",
 		Deprecated: "This command is deprecated. Contact Kubescape maintainers for more information.",

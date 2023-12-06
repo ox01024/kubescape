@@ -16,9 +16,9 @@ func GetVersionCmd() *cobra.Command {
 		Long:  ``,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.TODO()
-			v := cautils.NewIVersionCheckHandler(ctx)
+			v := cautils.NewIVersionCheckHandler(ctx) // 创建版本检查处理器
 			versionCheckRequest := cautils.NewVersionCheckRequest(cautils.BuildNumber, "", "", "version")
-			v.CheckLatestVersion(ctx, versionCheckRequest)
+			v.CheckLatestVersion(ctx, versionCheckRequest) // 检查最新版本
 			fmt.Fprintf(cmd.OutOrStdout(),
 				"Your current version is: %s\n",
 				versionCheckRequest.ClientVersion,

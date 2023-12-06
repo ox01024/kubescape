@@ -141,7 +141,6 @@ func (opap *OPAProcessor) loggerDoneScanning() {
 // but returns a map instead, to be merged by the caller.
 func (opap *OPAProcessor) processControl(ctx context.Context, control *reporthandling.Control) (map[string]resourcesresults.ResourceAssociatedControl, error) {
 	resourcesAssociatedControl := make(map[string]resourcesresults.ResourceAssociatedControl)
-
 	for i := range control.Rules {
 		resourceAssociatedRule, err := opap.processRule(ctx, &control.Rules[i], control.FixedInput)
 		if err != nil {
@@ -181,17 +180,14 @@ func (opap *OPAProcessor) processRule(ctx context.Context, rule *reporthandling.
 	resources := make(map[string]*resourcesresults.ResourceAssociatedRule)
 
 	ruleRegoDependenciesData := opap.makeRegoDeps(rule.ControlConfigInputs, fixedControlInputs)
-
-	resourcesPerNS := getAllSupportedObjects(opap.K8SResources, opap.ExternalResources, opap.AllResources, rule)
-	for i := range resourcesPerNS {
+	fmt.Println(opap.K8SResources)
+	resourcesPerNS := getAllSupportedObjects(opap.K8SResources, opap.ExternalResources, opap.AllResources, rule) // get all supported objects
+	for i := range resourcesPerNS {                                                                              // resourcesPerNS
 		resourceToScan := resourcesPerNS[i]
 		if _, ok := resourcesPerNS[clusterScope]; ok && i != clusterScope {
 			resourceToScan = append(resourceToScan, resourcesPerNS[clusterScope]...)
 		}
-		inputResources, err := reporthandling.RegoResourcesAggregator(
-			rule,
-			resourceToScan, // NOTE: this uses the initial snapshot of AllResources
-		)
+		inputResources, err := reporthandling.RegoResourcesAggregator(rule, resourceToScan)
 		if err != nil {
 			continue
 		}
@@ -200,7 +196,7 @@ func (opap *OPAProcessor) processRule(ctx context.Context, rule *reporthandling.
 			continue // no resources found for testing
 		}
 
-		inputRawResources := workloadinterface.ListMetaToMap(inputResources)
+		inputRawResources := workloadinterface.ListMetaToMap(resourceToScan) // ListMeta To Map
 
 		// the failed resources are a subgroup of the enumeratedData, so we store the enumeratedData like it was the input data
 		enumeratedData, err := opap.enumerateData(ctx, rule, inputRawResources)
@@ -293,17 +289,17 @@ func (opap *OPAProcessor) runOPAOnSingleRule(ctx context.Context, rule *reportha
 
 // runRegoOnK8s compiles an OPA PolicyRule and evaluates its against k8s
 func (opap *OPAProcessor) runRegoOnK8s(ctx context.Context, rule *reporthandling.PolicyRule, k8sObjects []map[string]interface{}, getRuleData func(*reporthandling.PolicyRule) string, ruleRegoDependenciesData resources.RegoDependenciesData) ([]reporthandling.RuleResponse, error) {
-	modules, err := getRuleDependencies(ctx)
+	modules, err := getRuleDependencies(ctx) // 获取规则依赖的模块
 	if err != nil {
 		return nil, fmt.Errorf("rule: '%s', %s", rule.Name, err.Error())
 	}
 
-	opap.opaRegisterOnce.Do(func() {
-		// register signature verification methods for the OPA ast engine (since these are package level symbols, we do it only once)
-		rego.RegisterBuiltin2(cosignVerifySignatureDeclaration, cosignVerifySignatureDefinition)
-		rego.RegisterBuiltin1(cosignHasSignatureDeclaration, cosignHasSignatureDefinition)
-		rego.RegisterBuiltin1(imageNameNormalizeDeclaration, imageNameNormalizeDefinition)
-	})
+	//opap.opaRegisterOnce.Do(func() {
+	//	// register signature verification methods for the OPA ast engine (since these are package level symbols, we do it only once)
+	//	rego.RegisterBuiltin2(cosignVerifySignatureDeclaration, cosignVerifySignatureDefinition)
+	//	rego.RegisterBuiltin1(cosignHasSignatureDeclaration, cosignHasSignatureDefinition)
+	//	rego.RegisterBuiltin1(imageNameNormalizeDeclaration, imageNameNormalizeDefinition)
+	//})
 
 	modules[rule.Name] = getRuleData(rule)
 

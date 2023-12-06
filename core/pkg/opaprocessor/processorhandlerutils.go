@@ -2,7 +2,6 @@ package opaprocessor
 
 import (
 	"context"
-
 	logger "github.com/kubescape/go-logger"
 	"github.com/kubescape/k8s-interface/k8sinterface"
 	"github.com/kubescape/k8s-interface/workloadinterface"

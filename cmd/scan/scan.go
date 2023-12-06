@@ -43,8 +43,7 @@ func GetScanCommand(ks meta.IKubescape) *cobra.Command {
 		Example: scanCmdExamples,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if scanInfo.View == string(cautils.SecurityViewType) {
-				setSecurityViewScanInfo(args, &scanInfo)
-
+				setSecurityViewScanInfo(args, &scanInfo) // 设置扫描类型 以及 策略标识符 默认 扫描类型为集群 cautils.ScanTypeCluster 扫描策略标识符为 {clusterscan mitre nsa}
 				return securityScan(scanInfo, ks)
 			}
 
